@@ -1,0 +1,1 @@
+### This folder is not used in the actual app, it's only here for storing stuff for the git repo or other things like that

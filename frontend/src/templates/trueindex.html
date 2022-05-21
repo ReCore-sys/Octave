@@ -1,0 +1,78 @@
+<head>
+    <link rel="stylesheet" href="css/main.css" />
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+        href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900"
+        rel="stylesheet"
+        type="text/css"
+    />
+
+    <script type="module" src="js\src\ts\utils.js"></script>
+    <script src="js\src\ts\wslistener.js"></script>
+    <link rel="stylesheet" href="css/spin.css" type="text/css" async />
+    <script type="module" src="./js/external/spin.umd.js" async></script>
+    <script type="module" src="./js/external/tilt.js" async></script>
+    <script
+        type="module"
+        src="./js/external/animatedModal.min.js"
+        async
+    ></script>
+    <script src="js/external/Sortable.min.js" async></script>
+</head>
+
+<main>
+    <aside>
+        <i class="fa fa-bars"></i>
+        <i class="fa fa-home"></i>
+        <i class="fa fa-search"></i>
+        <i class="fa fa-volume-up"></i>
+        <i class="fa fa-user"></i>
+    </aside>
+
+    <section class="content" id="main-page">
+        <div class="music-head">
+            <img id="playlist-art" />
+            <section class="music-details">
+                <div>
+                    <p id="playlist-name"></p>
+                </div>
+                <div>
+                    <i class="fa fa-play">&nbsp; </i>
+                    <i class="fa fa-plus">&nbsp; </i>
+                    <i class="fa fa-ellipsis-h">&nbsp; </i>
+                </div>
+            </section>
+        </div>
+        <ul class="dummy-list"></ul>
+        <ul class="music-list"></ul>
+        <!--
+        <li id="0" class="playlist-song">
+          <p>Stains of time</p>
+          <p>Jamie Christopherson</p>
+          <p>4:29</p>
+          <p>MGR</p>
+        </li>
+      -->
+    </section>
+</main>
+
+<footer>
+    <div class="playing">
+        <img class="song-art" />
+        <div class="playing-info">
+            <p id="song-name">{{index .currentSong "Title"}}</p>
+            <p id="song-artist">{{index .currentSong "Artist"}}</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <i class="fa fa-step-backward"></i>
+        <i class="fa fa-pause"></i>
+        <i class="fa fa-step-forward"></i>
+        <i class="fa fa-repeat"></i>
+        <i class="fa fa-random"></i>
+    </div>
+</footer>
