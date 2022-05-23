@@ -1,0 +1,56 @@
+.items-holder {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+  margin-left: 25px;
+}
+
+.items-list {
+  width: 100%;
+}
+
+.item {
+  margin: 25px;
+  margin-top: 5;
+  margin-bottom: 5;
+  padding-left: 10px;
+  padding-top: 10px;
+  width: 90%;
+  height: 30px;
+  background-color: #2a345c;
+  border-radius: 25px;
+  list-style: none;
+}
+
+td {
+  width: 22.5%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table {
+  width: 100%;
+  justify-content: left;
+}
+
+.sortable-ghost {
+  background-color: #354275;
+}
+
+.search-bar {
+  margin-left: 25px;
+  margin-top: 50px;
+  width: 90%;
+  height: 50px;
+  border-radius: 25px;
+  padding: 0 20px;
+  border: 5px;
+}
+.search-bar :focus {
+  outline: none;
+  color: #a8ddcf;
+}
+
+/*# sourceMappingURL=library.css.map */

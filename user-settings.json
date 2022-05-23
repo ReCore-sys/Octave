@@ -1,0 +1,11 @@
+{
+    "User": "ReCore",
+    "SongDir": "C:\\Users\\ReCore\\Music\\",
+    "dbPath": "data.db",
+    "logPath": "C:/Users/ReCor/Documents/OtherCode/Octave/logs",
+    "stateFile": "C:/Users/ReCor/Documents/OtherCode/Octave/state.json",
+    "MeilliThreads": 2,
+    "MeilliRam": 4096,
+    "MeilliPort": 7700,
+    "AssetDir": "./assets"
+}
