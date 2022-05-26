@@ -45,7 +45,7 @@ func Settings() SettingsStruct {
 		log.Println(err)
 	}
 	sett := SettingsStruct{}
-	sett.Version = settingsmap["Version"].(string)
+	sett.Version = settingsmap["version"].(string)
 	sett.Name = settingsmap["Name"].(string)
 	sett.User = settingsmap["User"].(string)
 	sett.SongDir = settingsmap["SongDir"].(string)
