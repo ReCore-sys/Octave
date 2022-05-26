@@ -1,7 +1,6 @@
 build
 node_modules
 .vscode
-frontend/wailsjs/*
 package-lock.json
 package.json
 tsconfig.json
@@ -20,4 +19,3 @@ assets/img/*
 settings.json
 go.mod
 go.sum
-**/*/wailsjs
