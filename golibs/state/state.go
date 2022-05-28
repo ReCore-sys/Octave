@@ -16,8 +16,8 @@ type Statemap struct {
 	Next           db.Song     `json:"next"`           // The ID of the next song
 	Prev           db.Song     `json:"prev"`           // The ID of the previous song
 	ActivePlaylist db.Playlist `json:"activePlaylist"` // The ID of the active playlist
-	Queue          []db.Song   `json:"queue"`          // The IDs of the songs in the queue
-	CurrentIndex   int         `json:"currentIndex"`   // The index of the current song in the queue
+	//Queue          []db.Song   `json:"queue"`          // The IDs of the songs in the queue
+	CurrentIndex int `json:"currentIndex"` // The index of the current song in the queue
 }
 
 var (

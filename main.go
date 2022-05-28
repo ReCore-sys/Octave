@@ -19,6 +19,7 @@ import (
 	wails_logger "github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	_ "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 //go:embed frontend/src

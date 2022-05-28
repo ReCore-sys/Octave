@@ -1,7 +1,8 @@
 import * as underscore from "underscore";
+import { GetAllSongs } from "../frontend/wailsjs/go/main/App.js";
 import { parsetime, Update, UpdateSong } from "./utils.js";
 export async function FillItems() {
-    let songs = await window.go.main.App.GetAllSongs();
+    let songs = await GetAllSongs();
     console.log(songs);
     $(".items-list").empty();
     for (let song of songs) {

@@ -1,7 +1,11 @@
 package main
 
 import (
+	db "Octave/golibs/database"
+	"Octave/golibs/download"
 	"Octave/golibs/search_engine"
+	"Octave/golibs/settings"
+	_ "embed"
 	"testing"
 	"time"
 )
@@ -71,5 +75,18 @@ func BenchmarkIndex(b *testing.B) {
 func BenchmarkTemplate(b *testing.B) {
 	a := App{}
 	a.Parse("home.html")
+
+}
+
+//go:embed "settings.json"
+var default_settings []byte
+
+func TestDownload(t *testing.T) {
+	settings.SetEmbedded(default_settings)
+	song := db.OpenDatabase().LookupSong("1104838")
+	err := download.Download(song)
+	if err != nil {
+		t.Error(err)
+	}
 
 }

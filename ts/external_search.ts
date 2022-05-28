@@ -1,7 +1,13 @@
-import { fatal } from "./utils.js";
+import {
+    InCache,
+    JSLog,
+    Save,
+    Search,
+    SongDownloaded,
+} from "../frontend/wailsjs/go/main/App.js";
+import { debug, fatal } from "./utils.js";
 
 $(".search-bar").on("keypress", async function (e) {
-    let utils = await utilspromise;
     $(".search-bar").css("transition", "all 0.3s ease-in-out");
     if ($(this).is(":focus")) {
         $(this).css({
@@ -17,8 +23,8 @@ $(".search-bar").on("keypress", async function (e) {
         var searchq = $(".search-bar").val();
         console.log(searchq);
         if (typeof searchq == "string") {
-            utils.debug(`Searching for ${searchq}`);
-            let resprom = window.go.main.App.Search(searchq);
+            debug(`Searching for ${searchq}`);
+            let resprom = Search(searchq);
             let songlist = $(".search-results");
             songlist.empty();
             let loader = $(".har-loader");
@@ -54,10 +60,7 @@ $(".search-bar").on("keypress", async function (e) {
             console.log("DONE");
             setupSearch();
         } else {
-            window.go.main.App.JSLog(
-                "warn",
-                `Search was not a string\n${searchq}`
-            );
+            JSLog("warn", `Search was not a string\n${searchq}`);
         }
     }
 });
@@ -78,17 +81,16 @@ function setupSearch() {
 
 async function ClickObesity(e: JQuery) {
     console.log(0);
-    let utils = await utilspromise;
     // Now we need to pop it out and just generally make it L A R G E
     console.log(1);
     let id = e.attr("id");
     if (typeof id == "undefined") {
         console.log("Well fuck");
-        utils.fatal(`Clicked on a search result that doesn't have an id`);
+        fatal(`Clicked on a search result that doesn't have an id`);
         return;
     }
     console.log(2);
-    let song = await window.go.main.App.InCache(id);
+    let song = await InCache(id);
     console.log(3);
     let newmodal = $("<div>");
     newmodal.addClass("modal");
@@ -101,7 +103,7 @@ async function ClickObesity(e: JQuery) {
     newmodal.append(artistheader);
 
     let downloadbutton = $(`<button>`).addClass("modal-download");
-    if (!(await window.go.main.App.SongDownloaded(id))) {
+    if (!(await SongDownloaded(id))) {
         downloadbutton.text("Downloaded");
     } else {
         downloadbutton.append($(`<embed src="assets/svg/thumbs_up.svg">`));
@@ -110,11 +112,11 @@ async function ClickObesity(e: JQuery) {
     downloadbutton.on("click", async function () {
         let id = $(this).attr("song-id");
         if (typeof id == "undefined") {
-            utils.fatal(`Clicked on a download button that doesn't have an id`);
+            fatal(`Clicked on a download button that doesn't have an id`);
             return;
         }
 
-        let worked = await window.go.main.App.Save(id);
+        let worked = await Save(id);
         if (worked) {
             DownloadAnim();
         }
@@ -158,7 +160,7 @@ async function AddBadges() {
             fatal(`Search result doesn't have an id`);
             return;
         }
-        let isdownloaded = await window.go.main.App.SongDownloaded(id);
+        let isdownloaded = await SongDownloaded(id);
         if (isdownloaded) {
             let icondiv = $("<div>")
                 .addClass("downloaded-icon")

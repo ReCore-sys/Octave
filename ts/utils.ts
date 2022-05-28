@@ -1,9 +1,12 @@
+import { db, settings, global_state } from "../frontend/wailsjs/go/models";
 import {
-    Playlist,
-    SettingsStruct,
-    Song,
-    Statemap,
-} from "../../wailsjs/go/models";
+    FindSong,
+    GetState,
+    JSLog,
+    Parse,
+    Settings,
+} from "../frontend/wailsjs/go/main/App";
+import "../frontend/wailsjs/runtime";
 import { FillItems } from "./search.js";
 
 var startTime: Date, endTime: Date;
@@ -20,7 +23,7 @@ function end() {
 
 export function diff(id: number) {
     let d = end();
-    window.go.main.App.JSLog("info", `${id} took ${d}ms`);
+    JSLog("info", `${id} took ${d}ms`);
     start();
 }
 start();
@@ -31,15 +34,15 @@ console.log("Loaded!");
  */ export async function UpdateMain(path: string) {
     console.log("Updating main");
     let main = $("#main-page");
-    let newcontent = await window.go.main.App.Parse(path);
+    let newcontent = await Parse(path);
     main.html(newcontent);
 }
-let settings: SettingsStruct;
+let my_settings: settings.SettingsStruct;
 /**
  * When the page loads, get the state, set the playlist, update the page, and add event listeners to
  * the search and home buttons.
  */ export async function setuppage() {
-    settings = await window.go.main.App.Settings();
+    my_settings = await Settings();
     let state = await State();
     console.log("Setting up page");
     SetPlaylist(state.activePlaylist);
@@ -62,8 +65,8 @@ let settings: SettingsStruct;
  * It returns the state of the application.
  * @returns {Statemap} The state of the application.
  */
-export async function State(): Promise<Statemap> {
-    let state = await window.go.main.App.GetState();
+export async function State(): Promise<global_state.Statemap> {
+    let state = await GetState();
     return state;
 }
 
@@ -82,7 +85,7 @@ export async function State(): Promise<Statemap> {
         $(".song-art").attr("src", "");
         $(".song-art").attr(
             "src",
-            `http://localhost:${settings.wsport}/song_img/` + song.Image
+            `http://localhost:${my_settings.wsport}/song_img/` + song.Image
         );
     }
     $("#song-name").text(song.Title);
@@ -93,16 +96,16 @@ export async function State(): Promise<Statemap> {
  * "UpdateSong" is a function that takes a song object as a parameter and calls the "UpdateSong"
  * function in the "App" class in the "main" namespace in the "go" window object.
  * @param {Song} song - Song
- */ export async function UpdateSong(song: Song) {
-    window.go.main.App.UpdateSong(song);
+ */ export async function UpdateSong(song: db.Song) {
+    UpdateSong(song);
 }
 
 /**
  * SetPlaylist is an async function that takes a playlist as a parameter and then sets the playlist
  * name, art, and song list, as well as updating the playlist screen
  * @param {Playlist} playlist - Playlist
- */ export async function SetPlaylist(playlist: Playlist) {
-    let settings = await window.go.main.App.Settings();
+ */ export async function SetPlaylist(playlist: db.Playlist) {
+    let settings = await Settings();
     if ($("#playlist-name").text() != playlist.name) {
         $("#playlist-art").attr(
             "src",
@@ -114,7 +117,7 @@ export async function State(): Promise<Statemap> {
     let activeid = $(".active").attr("id");
     let emptied = false;
     for (let songid of playlist.songs) {
-        let song = await window.go.main.App.FindSong(songid);
+        let song = await FindSong(songid);
         // Check if the song already exists. This saves us some computational power and reduces flickering effect
         if ($("#" + song.id).length == 0) {
             // If it doesn't exists, redo the list
@@ -173,7 +176,7 @@ export async function clik(id: string) {
  * It takes a song id, finds the song, and then updates the song and the UI.
  * @param {string} id - The id of the song to set.
  */ export async function SetSong(id: string) {
-    let song = await window.go.main.App.FindSong(id);
+    let song = await FindSong(id);
     UpdateSong(song);
     Update();
 }
@@ -193,19 +196,19 @@ setuppage();
  *    Log functions
  *========================**/
 export function error(msg: string) {
-    window.go.main.App.JSLog("error", msg);
+    JSLog("error", msg);
 }
 export function info(msg: string) {
-    window.go.main.App.JSLog("info", msg);
+    JSLog("info", msg);
 }
 export function debug(msg: string) {
-    window.go.main.App.JSLog("debug", msg);
+    JSLog("debug", msg);
 }
 export function warn(msg: string) {
-    window.go.main.App.JSLog("warn", msg);
+    JSLog("warn", msg);
 }
 export function fatal(msg: string) {
-    window.go.main.App.JSLog("fatal", msg);
+    JSLog("fatal", msg);
 }
 
 export function sleep(ms: number) {
