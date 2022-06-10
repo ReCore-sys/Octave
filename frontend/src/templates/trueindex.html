@@ -1,5 +1,8 @@
+<!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/control.css" />
+    <link rel="stylesheet" href="css/sweetalert2.css" />
     <link
         rel="stylesheet"
         href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -10,8 +13,11 @@
         type="text/css"
     />
 
-    <script type="module" src="js\src\ts\utils.js"></script>
-    <script src="js\src\ts\wslistener.js"></script>
+    <script type="module" src="js\ts\utils.js"></script>
+    <script src="./js/external/sweetalert2/dist/sweetalert2.min.js"></script>
+
+    <script type="module" src="js\ts\sidebar.js"></script>
+    <script src="js\ts\wslistener.js"></script>
     <link rel="stylesheet" href="css/spin.css" type="text/css" async />
     <script type="module" src="./js/external/spin.umd.js" async></script>
     <script type="module" src="./js/external/tilt.js" async></script>
@@ -20,51 +26,42 @@
         src="./js/external/animatedModal.min.js"
         async
     ></script>
+
     <script src="js/external/Sortable.min.js" async></script>
+    <script>
+        $("footer").ready(function () {
+            footerheight = $("footer").outerHeight();
+            fullpageheight = $("body").outerHeight();
+            $("main").css("height", fullpageheight - footerheight);
+        });
+    </script>
 </head>
 
 <main>
+    <div class="control-holder">
+        <img class="control-minimise" src="assets/svg/minimize.svg" />
+
+        <img class="control-close" src="assets/svg/close.svg" />
+    </div>
     <aside>
         <i class="fa fa-bars"></i>
-        <i class="fa fa-home"></i>
+        <i class="fa sidebar-playlist" active="false">
+            <img class="playlist-icon" src="assets/svg/playlist.svg" />
+        </i>
         <i class="fa fa-search"></i>
         <i class="fa fa-volume-up"></i>
         <i class="fa fa-user"></i>
     </aside>
 
-    <section class="content" id="main-page">
-        <div class="music-head">
-            <img id="playlist-art" />
-            <section class="music-details">
-                <div>
-                    <p id="playlist-name"></p>
-                </div>
-                <div>
-                    <i class="fa fa-play">&nbsp; </i>
-                    <i class="fa fa-plus">&nbsp; </i>
-                    <i class="fa fa-ellipsis-h">&nbsp; </i>
-                </div>
-            </section>
-        </div>
-        <ul class="dummy-list"></ul>
-        <ul class="music-list"></ul>
-        <!--
-        <li id="0" class="playlist-song">
-          <p>Stains of time</p>
-          <p>Jamie Christopherson</p>
-          <p>4:29</p>
-          <p>MGR</p>
-        </li>
-      -->
-    </section>
+    <section class="content" id="main-page"></section>
 </main>
 
 <footer>
     <div class="playing">
         <img class="song-art" />
         <div class="playing-info">
-            <p id="song-name">{{index .currentSong "Title"}}</p>
-            <p id="song-artist">{{index .currentSong "Artist"}}</p>
+            <p id="song-name">{{ currentSong.Title }}</p>
+            <p id="song-artist">{{ currentSong.Artist }}</p>
         </div>
     </div>
 

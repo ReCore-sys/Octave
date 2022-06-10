@@ -1,0 +1,11 @@
+<ul class="sidebar-playlist-list">
+    {% for playlist in playlists %}
+    <button class="sidebar-playlist-list-item" id="{{ playlist.id }}">
+        {{ playlist.name }}
+    </button>
+    {% endfor %}
+    <button class="create-playlist sidebar-playlist-list-item">
+        Create playlist
+        <img src="assets/svg/add.svg" />
+    </button>
+</ul>

@@ -1,19 +1,25 @@
 .items-holder {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: left;
   margin-top: 20px;
   margin-left: 25px;
+}
+
+.items-holder > div {
+  width: 95%;
 }
 
 .items-list {
   width: 100%;
 }
 
-.item {
+.table-head {
+  border-radius: 25px;
+}
+
+tr {
   margin: 25px;
-  margin-top: 5;
-  margin-bottom: 5;
   padding-left: 10px;
   padding-top: 10px;
   width: 90%;
@@ -25,14 +31,18 @@
 
 td {
   width: 22.5%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: medium;
+  padding: 5px;
+}
+
+th {
+  font-size: medium;
 }
 
 table {
   width: 100%;
   justify-content: left;
+  border-radius: 25px;
 }
 
 .sortable-ghost {

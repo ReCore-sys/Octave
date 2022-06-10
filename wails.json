@@ -1,31 +1,31 @@
 {
-  "name": "Octave",
-  "frontend:build": "",
-  "frontend:install": "",
-  "frontend:dev": "",
-  "frontend:dev:watcher": "",
-  "wailsjsdir": "./frontend",
-  "version": "2",
-  "Path": "",
-  "BuildDir": "",
-  "outputfilename": "Octave.exe",
-  "OutputType": "",
-  "Platform": "",
-  "runNonNativeBuildHooks": false,
-  "postBuildHooks": null,
-  "Author": {
-    "name": "",
-    "email": ""
-  },
-  "Info": {
-    "companyName": "Octave",
-    "productName": "Octave",
-    "productVersion": "1.0.0",
-    "copyright": "Copyright.........",
-    "comments": "Built using Wails (https://wails.app)"
-  },
-  "debounceMS": 100,
-  "devserverurl": "http://localhost:34115",
-  "appargs": "",
-  "nsisType": ""
+    "name": "Octave",
+    "frontend:build": "",
+    "frontend:install": "",
+    "frontend:dev": "",
+    "frontend:dev:watcher": "",
+    "wailsjsdir": "./frontend/src/js",
+    "version": "2",
+    "Path": "",
+    "BuildDir": "",
+    "outputfilename": "Octave.exe",
+    "OutputType": "",
+    "Platform": "",
+    "runNonNativeBuildHooks": false,
+    "postBuildHooks": null,
+    "Author": {
+        "name": "",
+        "email": ""
+    },
+    "Info": {
+        "companyName": "Octave",
+        "productName": "Octave",
+        "productVersion": "1.0.0",
+        "copyright": "Copyright.........",
+        "comments": "Built using Wails (https://wails.app)"
+    },
+    "debounceMS": 100,
+    "devserverurl": "http://localhost:34115",
+    "appargs": "",
+    "nsisType": ""
 }

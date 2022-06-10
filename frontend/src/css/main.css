@@ -9,17 +9,18 @@
 :root {
   --color-primary: #eb2f64;
   --color-text: #a5a7ba;
-  --color-text-2: #84CEBB;
-  --color-grey-dark: #161B31;
-  --color-grey-dark-rgb: rgb(22,27,49);
-  --color-grey-light: #252D47;
+  --color-text-2: #84cebb;
+  --color-grey-dark: #161b31;
+  --color-grey-dark-rgb: rgb(22, 27, 49);
+  --color-grey-light: #252d47;
   --color-grey-lighter: #626691;
-  --shadow-dark: 0 2rem 6rem rgba(0,0,0, .5);
-  --shadow-dark-2: 0 2rem 6rem rgba(0,0,0, .3);
-  --shadow-light: 0 2rem 5rem rgba(0,0,0,.1);
+  --shadow-dark: 0 2rem 6rem rgba(0, 0, 0, 0.5);
+  --shadow-dark-2: 0 2rem 6rem rgba(0, 0, 0, 0.3);
+  --shadow-light: 0 2rem 5rem rgba(0, 0, 0, 0.1);
 }
 
-html, body {
+html,
+body {
   height: 100%;
   font-family: "Barlow Semi Condensed", sans-serif;
   font-size: 62.5%;
@@ -46,8 +47,7 @@ aside {
   flex: 0 0 5%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  justify-content: flex;
   height: 90%;
   width: 40px;
   position: fixed;
@@ -64,7 +64,7 @@ aside {
 aside i.fa {
   color: var(--color-grey-lighter);
   font-size: 2.8rem;
-  margin: 30%;
+  margin: 12px;
   box-shadow: var(--shadow-light);
 }
 
@@ -82,10 +82,27 @@ aside i.fa {
   background-position: top;
   color: #fff;
   padding: 2.5rem;
-  flex: 0 0 30%;
+  position: sticky;
+  top: 0;
+  flex: 0 0 20%;
   display: flex;
   align-items: center;
   box-shadow: 0 10px 3px -3px var(--shadow-dark-2);
+  transition: all 0.3s ease-in-out;
+}
+
+.music-head.shrink {
+  transition: all 0.3s ease-in-out;
+  flex: 0 0 5%;
+}
+
+.playlist-art {
+  transition: all 0.3s ease-in-out;
+}
+
+.playlist-art.shrink {
+  transition: all 0.3s ease-in-out;
+  display: none;
 }
 
 .music-head img {
@@ -105,7 +122,10 @@ aside i.fa {
   display: flex;
   flex-direction: column;
   margin: auto;
+  margin-top: 0;
+  margin-bottom: 0;
   padding-left: 2rem;
+  bottom: 100px;
 }
 
 .music-details div:nth-child(1) {
@@ -142,6 +162,12 @@ aside i.fa {
   padding: 2.5rem 2.5rem 0;
   margin-right: 5%;
   flex: 1 0 auto;
+  max-height: 50%;
+  overflow-y: auto;
+}
+
+.music-list.shrink {
+  max-height: 58%;
 }
 
 .music-list li {
@@ -236,6 +262,59 @@ footer {
 
 .active {
   background-color: var(--color-grey-lighter);
+}
+
+.playlist-icon {
+  filter: invert(38%) sepia(57%) saturate(265%) hue-rotate(196deg) brightness(94%) contrast(91%);
+  box-shadow: none;
+  height: 34px;
+  width: 36px;
+}
+
+.sidebar-playlist {
+  margin-left: 6px !important;
+}
+
+.opened-playlist {
+  border: 3px solid rgba(98, 102, 145, 0.7);
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
+  width: 96.7% !important;
+  border-radius: 9px 9px 0 0 !important;
+}
+
+.fa {
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+.sidebar-playlist-list {
+  list-style-type: none;
+  padding: 4px;
+  margin: 0;
+  border: 3px solid rgba(98, 102, 145, 0.7);
+  border-top: 0;
+  border-radius: 0 0 9px 9px;
+}
+
+.sidebar-playlist-list-item {
+  font-size: 1.8rem;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.sidebar-playlist-list > button > img {
+  margin-left: 5px;
+  filter: invert(39%) sepia(45%) saturate(348%) hue-rotate(196deg) brightness(94%) contrast(88%);
+}
+
+.sidebar-playlist-list > button {
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--color-text);
 }
 
 /*# sourceMappingURL=main.css.map */

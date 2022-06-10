@@ -1,0 +1,31 @@
+.control-minimise {
+  width: 20px;
+  height: 20px;
+  padding: 5px 20px 5px 20px;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.control-close {
+  width: 20px;
+  height: 20px;
+  padding: 5px 20px 5px 20px;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.control-minimise:hover {
+  background-color: #fb5e6c;
+}
+
+.control-close:hover {
+  background-color: #fb5e6c;
+}
+
+.control-holder {
+  right: 0;
+  position: absolute;
+  background-color: #354275;
+}
+
+/*# sourceMappingURL=control.css.map */

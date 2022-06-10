@@ -21,3 +21,5 @@ settings.json
 go.mod
 go.sum
 **/*/wailsjs
+scss/bootstrap
+frontend/src/css/bootstrap

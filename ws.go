@@ -86,6 +86,7 @@ func heartbeat(conn *websocket.Conn) {
 
 				if err != nil {
 					Log.Error(err.Error())
+					break
 				}
 				if len(msg) > 0 {
 					break
@@ -102,8 +103,9 @@ func heartbeat(conn *websocket.Conn) {
 			if !beatrecived {
 				missedbeats++
 			}
-			if missedbeats > 5 {
+			if missedbeats > 1 {
 				Log.WarningF("Lost connection to client, missed %d beats", missedbeats)
+				break
 			}
 			beatrecived = false
 		}
@@ -111,7 +113,10 @@ func heartbeat(conn *websocket.Conn) {
 
 	}
 	Log.Info("A connection was made from the same IP and port more recently than this one, closing connection")
-	conn.Close()
+	err := conn.Close()
+	if err != nil {
+		Log.Error(err.Error())
+	}
 }
 
 // Will return true every x milliseconds

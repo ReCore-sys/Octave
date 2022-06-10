@@ -1,14 +1,17 @@
 package main
 
 import (
+	db "Octave/golibs/database"
 	logging "Octave/golibs/log"
+	"Octave/golibs/settings"
 	global_state "Octave/golibs/state"
-	"bytes"
 	"encoding/json"
-	"text/template"
+
+	"github.com/flosch/pongo2"
 )
 
 func (a *App) Parse(path string) string {
+	Settings := settings.Settings()
 	if Log == nil {
 		logging.CreateLogger()
 		Log = logging.Log
@@ -18,24 +21,33 @@ func (a *App) Parse(path string) string {
 	if err != nil {
 		Log.Error(err.Error())
 	}
-	Log.Info("Parsing template: " + path + " complete")
-	filetext := string(file)
-	t := template.Must(template.New("main").Parse(filetext))
-	// Create an empty io reader and writer
-
-	var final bytes.Buffer
-	Log.Info("Mixing maps")
-	maps := MapMixer(StructToMap(Settings), StructToMap(global_state.State))
-	err = t.ExecuteTemplate(&final, "main", maps)
+	t, err := pongo2.FromBytes(file)
 	if err != nil {
 		Log.Error(err.Error())
 	}
-	cont := final.String()
 
-	// find any instance of {{ import <file> }} and replace with the contents of the file
-	// this is a hacky way to do this, but it works for now
+	// Some paths require certain variables
+	specialmap := make(map[string]any)
+	if path == "playlists_sidebar.html" {
+		playlists, err := db.OpenDatabase().GetAllPlaylists()
+		if err != nil {
+			Log.Error(err.Error())
+		}
+		specialmap["playlists"] = playlists
+	}
 
-	return cont
+	maps := MapMixer(StructToMap(Settings), StructToMap(global_state.State), specialmap)
+	var emptycontext pongo2.Context
+	v, err := json.Marshal(maps)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	json.Unmarshal(v, &emptycontext)
+	out, err := t.Execute(emptycontext)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	return out
 }
 
 func MapMixer(inmaps ...map[string]any) map[string]any {

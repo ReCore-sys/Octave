@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -147,4 +148,25 @@ func InMap(item string, mep map[string]any) bool {
 	_, ok := mep[item]
 	return ok
 
+}
+
+func RegexMatch(query string, target string) bool {
+	r, err := regexp.Compile(query)
+	if err != nil {
+		Log.Error(err.Error())
+		return false
+	}
+	return r.MatchString(target)
+}
+
+func Sanitize(s string) string {
+	regmatch := "<script>(.*?)</script>"
+	if RegexMatch(regmatch, s) {
+		innerscript, err := regexp.Compile(regmatch)
+		if err != nil {
+			Log.Error(err.Error())
+		}
+		s = string(innerscript.FindSubmatch([]byte(s))[0])
+	}
+	return s
 }

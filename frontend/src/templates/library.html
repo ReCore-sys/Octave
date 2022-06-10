@@ -1,6 +1,16 @@
 <script type="module" src="js/external/sort.js"></script>
-<script type="module" src="js/src/ts/search.js"></script>
+<script
+    type="module"
+    src="js/external/datatables.net/js/jquery.dataTables.js"
+></script>
+<link
+    rel="stylesheet"
+    href="js/external/datatables.net-dt/css/jquery.dataTables.css"
+/>
+
+<script type="module" src="js/ts/library.js"></script>
 <link rel="stylesheet" href="css/library.css" type="text/css" />
+
 <style>
     aside {
         backdrop-filter: brightness(0.95);
@@ -10,5 +20,30 @@
     <input type="text" placeholder="Search..." class="search-bar" />
 </div>
 <div class="items-holder">
-    <ul class="items-list"></ul>
+<table class="song-table">
+<thead>
+    <tr class="table-head">
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Album</th>
+        <th>Length</th>
+    </tr>
+</thead>
+    {% for song in ActivePlaylist %}
+    <td song-id={{song.id}} class="song-title text-truncate">
+        {{song.title}}
+    </td>
+    <td class="song-artist text-truncate">
+        {{song.artist}}
+    </td>
+    <td class="song-album text-truncate">
+        {{song.album}}
+    </td>
+    <td class="song-length">
+        {{song.length}}
+    </td>
+    {% endfor %}
+
+
 </div>
+<script></script>

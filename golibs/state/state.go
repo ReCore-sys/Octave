@@ -29,3 +29,9 @@ func SaveState(s Statemap) {
 	Log.Info("Saving state")
 	State = s
 }
+
+func GetState() Statemap {
+	Log := logging.Log
+	Log.Info("Getting state")
+	return State
+}

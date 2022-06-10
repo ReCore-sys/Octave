@@ -71,7 +71,7 @@ func (a *App) Greet(name string) string {
 
 /* It's returning the global state. */
 func (a *App) GetState() global_state.Statemap {
-	return global_state.State
+	return global_state.GetState()
 }
 
 /* It's updating the current song in the global state. */
@@ -137,6 +137,19 @@ func (a *App) SongDownloaded(id string) bool {
 	return ex
 }
 
+func (a *App) Settings() settings.SettingsStruct {
+	if (Settings == settings.SettingsStruct{}) {
+		Settings = settings.Settings()
+	}
+	return Settings
+}
+
+func (a *App) CreatePlaylist(name string) bool {
+	database := db.OpenDatabase()
+	err, _ := database.CreatePlaylist(name)
+	return err
+}
+
 func SaveImage(song db.Song) {
 	Log.Infof("Saving image for %s", song.ID)
 	resp, err := http.Get(song.Image)
@@ -159,11 +172,4 @@ func SaveImage(song db.Song) {
 	defer f.Close()
 	f.Write(body)
 
-}
-
-func (a *App) Settings() settings.SettingsStruct {
-	if (Settings == settings.SettingsStruct{}) {
-		Settings = settings.Settings()
-	}
-	return Settings
 }

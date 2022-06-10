@@ -1,12 +1,5 @@
-import {
-    InCache,
-    JSLog,
-    Save,
-    Search,
-    SongDownloaded,
-} from "../frontend/wailsjs/go/main/App.js";
+import { InCache, JSLog, Save, Search, SongDownloaded, } from "../wailsjs/go/main/App.js";
 import { debug, fatal } from "./utils.js";
-
 $(".search-bar").on("keypress", async function (e) {
     $(".search-bar").css("transition", "all 0.3s ease-in-out");
     if ($(this).is(":focus")) {
@@ -59,12 +52,12 @@ $(".search-bar").on("keypress", async function (e) {
             AddBadges();
             console.log("DONE");
             setupSearch();
-        } else {
+        }
+        else {
             JSLog("warn", `Search was not a string\n${searchq}`);
         }
     }
 });
-
 /**
  * It sets up the search results to be tilted and clickable
  */
@@ -78,8 +71,7 @@ function setupSearch() {
         await ClickObesity($(this));
     });
 }
-
-async function ClickObesity(e: JQuery) {
+async function ClickObesity(e) {
     console.log(0);
     // Now we need to pop it out and just generally make it L A R G E
     console.log(1);
@@ -98,14 +90,13 @@ async function ClickObesity(e: JQuery) {
     newmodal.addClass("modal");
     let header = $(`<h1>`).text(song.Title).addClass("modal-title");
     newmodal.append(header);
-
     let artistheader = $(`<h2>`).text(song.Artist).addClass("modal-artist");
     newmodal.append(artistheader);
-
     let downloadbutton = $(`<button>`).addClass("modal-download");
     if (!(await SongDownloaded(id))) {
         downloadbutton.text("Downloaded");
-    } else {
+    }
+    else {
         downloadbutton.append($(`<embed src="assets/svg/thumbs_up.svg">`));
     }
     downloadbutton.attr("song-id", song.id);
@@ -115,7 +106,6 @@ async function ClickObesity(e: JQuery) {
             fatal(`Clicked on a download button that doesn't have an id`);
             return;
         }
-
         let worked = await Save(id);
         if (worked) {
             DownloadAnim();
@@ -126,32 +116,26 @@ async function ClickObesity(e: JQuery) {
     /* Appending the modal to the content div. */
     $(".content").append(newmodal);
     $(".search-results").fadeOut(0);
-
     newmodal.fadeIn(200);
 }
-
 function UnFatten() {
     $(".modal").fadeOut(200);
     $(".search-results").fadeIn(200);
     $(".modal").remove();
 }
-
 $("body").on("click", function (e) {
     var container = $(".modal");
-
     // if the target of the click isn't the container nor a descendant of the container
     if (!container.is(e.target) && container.has(e.target).length === 0) {
         UnFatten();
     }
 });
-
 function DownloadAnim() {
     let md = $(".modal-download");
     md.text("");
     md.append($(`<embed src="assets/svg/thumbs_up.svg">`));
     //md.fadeTo(200, 1);
 }
-
 async function AddBadges() {
     let songcards = $(".search-result");
     for (let song of songcards) {

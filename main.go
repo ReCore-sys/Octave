@@ -94,24 +94,22 @@ func main() {
 	global_state.SaveState(state)
 	Log.Info("Setting up websocket")
 	go handleRequests()
-	var ids []string
+	var songs []db.Song
 	allsongs := db.OpenDatabase().GetAllSongs()
-	for _, song := range allsongs {
-		ids = append(ids, song.ID)
-	}
+	songs = append(songs, allsongs...)
 	global_state.State.ActivePlaylist = db.Playlist{
 		ID:    "0",
 		Name:  "Default",
-		Songs: ids,
+		Songs: songs,
 		Art:   "witcher.png",
 	}
 	// Create application with options
 	Log.Info("Creating Wails App")
 	err = wails.Run(&options.App{
-		Title:             Settings.Name,
-		Width:             1024,
-		Height:            768,
-		DisableResize:     false,
+		Title: Settings.Name,
+		//Width:             1024,
+		//Height:            768,
+		DisableResize:     true,
 		Fullscreen:        false,
 		Frameless:         false,
 		StartHidden:       false,
@@ -119,13 +117,13 @@ func main() {
 		RGBA:              &options.RGBA{R: 255, G: 255, B: 255, A: 255},
 		Assets:            Assets,
 		Menu:              nil,
-		Logger:            nil,
-		LogLevel:          wails_logger.DEBUG,
+		Logger:            &wails_logger.DefaultLogger{},
+		LogLevel:          wails_logger.TRACE,
 		OnStartup:         app.startup,
 		OnDomReady:        app.domReady,
 		OnBeforeClose:     app.beforeClose,
 		OnShutdown:        app.shutdown,
-		WindowStartState:  options.Maximised,
+		WindowStartState:  options.Fullscreen,
 		Bind: []interface{}{
 			app,
 		},

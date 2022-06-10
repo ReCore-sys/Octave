@@ -1,14 +1,18 @@
-<style>
-    body {
-        background-color: #161b31;
-    }
-</style>
-<script type="module" src="js/external/jquery.min.js"></script>
-<head></head>
-<script>
-    async function s() {
-        (d = await window.go.main.App.Parse("trueindex.html")),
-            document.write(d);
-    }
-    s();
-</script>
+<!DOCTYPE html>
+<html>
+    <style>
+        body {
+            background-color: #161b31;
+        }
+    </style>
+
+    <script type="module" src="js/external/jquery.min.js"></script>
+    <head></head>
+    <script>
+        async function s() {
+            (d = await window.go.main.App.Parse("trueindex.html")),
+                document.write(d);
+        }
+        s();
+    </script>
+</html>

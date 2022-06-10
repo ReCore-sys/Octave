@@ -3,9 +3,13 @@ package main
 import (
 	db "Octave/golibs/database"
 	"Octave/golibs/download"
+	logging "Octave/golibs/log"
 	"Octave/golibs/search_engine"
 	"Octave/golibs/settings"
+	global_state "Octave/golibs/state"
 	_ "embed"
+	"encoding/json"
+	"os"
 	"testing"
 	"time"
 )
@@ -87,6 +91,63 @@ func TestDownload(t *testing.T) {
 	err := download.Download(song)
 	if err != nil {
 		t.Error(err)
+
+	}
+}
+
+func TestHTML(t *testing.T) {
+
+	settings.SetEmbedded(default_settings)
+	if Log == nil {
+		logging.CreateLogger()
+		Log = logging.Log
+	}
+	Settings = settings.Settings()
+	var state global_state.Statemap
+	// Open Settings.stateFile and read the json into a statemap
+	Log.Info("Loading StateFile")
+	statefile, err := os.ReadFile(Settings.StateFile)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	Log.Info("Unmarshalling StateFile into Statemap")
+	err = json.Unmarshal(statefile, &state)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	Log.Info("Updating global_state.State")
+	global_state.SaveState(state)
+	a := App{}
+	b := a.Parse("trueindex.html")
+	t.Log(b)
+}
+
+func TestState(t *testing.T) {
+	settings.SetEmbedded(default_settings)
+	if Log == nil {
+		logging.CreateLogger()
+		Log = logging.Log
+	}
+	Settings = settings.Settings()
+	stateFile, err := os.Open(Settings.StateFile)
+	if err != nil {
+		t.Error(err)
+
+	}
+	var emptystate global_state.Statemap
+	err = json.NewDecoder(stateFile).Decode(&emptystate)
+	if err != nil {
+		t.Errorf("Error decoding 1: %v", err)
+	}
+	gs := global_state.State
+	jsonform, err := json.Marshal(gs)
+	if err != nil {
+		t.Errorf("Error marshalling 2: %v", err)
+	}
+	var marshaltarget global_state.Statemap
+	err = json.Unmarshal(jsonform, &marshaltarget)
+	if err != nil {
+		t.Errorf("Error unmarshalling 3: %v", err)
 	}
 
 }

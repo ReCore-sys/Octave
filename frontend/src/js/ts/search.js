@@ -1,6 +1,5 @@
-import * as underscore from "underscore";
-import { GetAllSongs } from "../frontend/wailsjs/go/main/App.js";
-import { parsetime, Update, UpdateSong } from "./utils.js";
+import { GetAllSongs, UpdateSong } from "../wailsjs/go/main/App.js";
+import { parsetime, Update } from "./utils.js";
 export async function FillItems() {
     let songs = await GetAllSongs();
     console.log(songs);
@@ -9,18 +8,10 @@ export async function FillItems() {
         let newSong = $(`<li song-id="${song.id}" class="item">`);
         let table = $(`<table song-id="${song.id}" class="song-table">`);
         let row = $(`<tr song-id="${song.id}">`);
-        let title = $(`<td song-id="${song.id}" class="song-title">`).text(
-            song.Title
-        );
-        let artist = $(`<td song-id="${song.id}" class="song-artist">`).text(
-            song.Artist
-        );
-        let length = $(`<td song-id="${song.id}" class="song-length">`).text(
-            parsetime(song.Length)
-        );
-        let album = $(`<td song-id="${song.id}" class="song-album">`).text(
-            song.Album
-        );
+        let title = $(`<td song-id="${song.id}" class="song-title">`).text(song.Title);
+        let artist = $(`<td song-id="${song.id}" class="song-artist">`).text(song.Artist);
+        let length = $(`<td song-id="${song.id}" class="song-length">`).text(parsetime(song.Length));
+        let album = $(`<td song-id="${song.id}" class="song-album">`).text(song.Album);
         row.append(title);
         row.append(artist);
         row.append(length);
