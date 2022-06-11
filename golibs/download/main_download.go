@@ -16,12 +16,14 @@ func Download(song db.Song) error {
 		return err
 	}
 	first := results[0]
-	vid_id := first.VideoId
+	vidid := first.VideoId
 	loc := settings.Settings().SongDir + song.ID + ".mp3"
-	err = fromID(vid_id, loc)
+	err = fromID(vidid, loc)
 	if err != nil {
+
 		return err
 	}
+
 	return nil
 }
 
@@ -39,5 +41,6 @@ func fromID(id string, location string) error {
 		Resume: true,  // resume cancelled download
 		Mp3:    true,  // extract audio to MP3
 	}
+
 	return video.Download(0, location, option)
 }

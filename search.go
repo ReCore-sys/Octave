@@ -9,43 +9,19 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
-	"time"
 )
 
 var cache []db.Song
 
+var results []db.Song
+
 func (a *App) Search(input string) []db.Song {
-	var results []db.Song
-	if input == "test" {
-		dummysong := []db.Song{
-			{
-				ID:     "0",
-				Title:  "Another one bites the dust",
-				Artist: "Queen",
-				Album:  "The Game",
-				Length: 224,
-				Image:  "https://upload.wikimedia.org/wikipedia/en/4/4d/Another_one_bites_the_dust.jpg",
-			},
-		}
-		cache = dummysong
-		return dummysong
-	}
+	results = []db.Song{}
 
 	Log.Infof("Searching for: %v", input)
 	urlparts := url.Values{}
 	urlparts.Set("q", input)
-	qurl := "https://api.deezer.com/search?" + urlparts.Encode()
-	println(qurl)
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-	req, err := http.NewRequest("GET", qurl, nil)
-	if err != nil {
-		Log.Errorf("Error creating request: %s", err)
-		return results
-	}
-	req.Header.Set("User-Agent", "Octave/01")
-	resp, err := client.Do(req)
+	resp, err := http.Get("https://api.deezer.com/search?" + urlparts.Encode())
 	if err != nil {
 		Log.Error(err.Error())
 	}
@@ -58,62 +34,70 @@ func (a *App) Search(input string) []db.Song {
 	resultlist := resmap["data"].([]any)
 	for _, r := range resultlist {
 		result := r.(map[string]any)
-		song := db.Song{}
-
-		if InMap("id", result) {
-			song.ID = strconv.Itoa(int(result["id"].(float64)))
-		} else {
+		song, ok := ResultsToSong(result)
+		if !ok {
 			continue
-		}
-
-		if InMap("title", result) {
-			song.Title = result["title"].(string)
-		} else {
-			continue
-		}
-
-		if InMap("artist", result) {
-			song.Artist = result["artist"].(map[string]any)["name"].(string)
-		} else {
-			continue
-		}
-
-		if InMap("album", result) {
-			song.Album = result["album"].(map[string]any)["title"].(string)
-		} else {
-			continue
-		}
-
-		if InMap("duration", result) {
-			song.Length = int(result["duration"].(float64))
-		} else {
-			continue
-		}
-		defer func() {
-			if r := recover(); r != nil {
-				song.Image = ""
-			}
-		}()
-		if InMap("album", result) {
-			sizes := []string{"xl", "big", "medium", "small"}
-			for _, size := range sizes {
-				if InMap("cover_"+size, result["album"].(map[string]any)) {
-					if reflect.TypeOf(result["album"].(map[string]any)["cover_"+size]) != nil {
-
-						song.Image = result["album"].(map[string]any)["cover_"+size].(string)
-						break
-					} else {
-						Log.WarningF("Song %s had a nil image", result["title"].(string))
-					}
-				}
-			}
 		}
 
 		results = append(results, song)
 	}
 	Log.Info("Search complete")
 	cache = results
+
 	return results
+
+}
+
+// Given the json encoding of a result from the API, this function converts it to a song.
+func ResultsToSong(result map[string]any) (db.Song, bool) {
+
+	song := db.Song{}
+	if InMap("id", result) {
+		song.ID = strconv.Itoa(int(result["id"].(float64)))
+	} else {
+		return song, false
+	}
+
+	if InMap("title", result) {
+		song.Title = Sanitize(result["title"].(string))
+	} else {
+		return song, false
+	}
+
+	if InMap("artist", result) {
+		song.Artist = Sanitize(result["artist"].(map[string]any)["name"].(string))
+	} else {
+		return song, false
+	}
+
+	if InMap("album", result) {
+		song.Album = Sanitize(result["album"].(map[string]any)["title"].(string))
+	} else {
+		return song, false
+	}
+
+	if InMap("duration", result) {
+		song.Length = int(result["duration"].(float64))
+	} else {
+		return song, false
+	}
+	if InMap("album", result) {
+		sizes := []string{"xl", "big", "medium", "small"}
+		for _, size := range sizes {
+			if InMap("cover_"+size, result["album"].(map[string]any)) {
+				if reflect.TypeOf(result["album"].(map[string]any)["cover_"+size]) != nil {
+
+					song.Image = Sanitize(result["album"].(map[string]any)["cover_"+size].(string))
+
+					break
+				} else {
+					Log.WarningF("Song %s had a nil image", result["title"].(string))
+				}
+			}
+		}
+	}
+
+	return song, true
 
 }
 
@@ -121,9 +105,11 @@ func (a *App) Search(input string) []db.Song {
 func (a *App) InCache(id string) db.Song {
 	for _, result := range cache {
 		if result.ID == id {
+
 			return result
 		}
 	}
+
 	return db.Song{}
 }
 
@@ -140,12 +126,14 @@ func (a *App) SearchSaved(query string) []db.Song {
 		Log.Error(err.Error())
 	}
 	cache = res
+
 	return res
 
 }
 
 func InMap(item string, mep map[string]any) bool {
 	_, ok := mep[item]
+
 	return ok
 
 }
@@ -154,8 +142,10 @@ func RegexMatch(query string, target string) bool {
 	r, err := regexp.Compile(query)
 	if err != nil {
 		Log.Error(err.Error())
+
 		return false
 	}
+
 	return r.MatchString(target)
 }
 
@@ -168,5 +158,6 @@ func Sanitize(s string) string {
 		}
 		s = string(innerscript.FindSubmatch([]byte(s))[0])
 	}
+
 	return s
 }

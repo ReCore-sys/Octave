@@ -48,13 +48,13 @@ FirstLoad();
     let song = state.currentSong;
     $(".playlist-song").removeClass("active");
     $(`#${song.id}`).addClass("active");
-    if ($("#song-name").text() != song.Title ||
+    if ($("#song-name").text() != song.title ||
         $(".song-art").attr("src") == null) {
         $(".song-art").attr("src", "");
-        $(".song-art").attr("src", `http://localhost:${my_settings.wsport}/song_img/` + song.Image);
+        $(".song-art").attr("src", `http://localhost:${my_settings.wsport}/song_img/` + song.image);
     }
-    $("#song-name").text(song.Title);
-    $("#song-artist").text(song.Artist);
+    $("#song-name").text(song.title);
+    $("#song-artist").text(song.artist);
 }
 /**
  * SetPlaylist is an async function that takes a playlist as a parameter and then sets the playlist
@@ -85,29 +85,29 @@ FirstLoad();
                 $(".active").removeClass("active");
                 newSong.addClass("active");
             } // If the song is active, add the active class
-            newSong.append(`<p id="${song.id}-name">${song.Title}</p>`); // Add the song name
-            newSong.append(`<p id="${song.id}-artist">${song.Artist}</p>`); // Add the song artist
-            newSong.append(`<p id="${song.id}-len">${parsetime(song.Length)}</p>`); // Add the song length
-            newSong.append(`<p id="${song.id}-album">${song.Album}</p>`); // Add the song album
+            newSong.append(`<p id="${song.id}-name">${song.title}</p>`); // Add the song name
+            newSong.append(`<p id="${song.id}-artist">${song.artist}</p>`); // Add the song artist
+            newSong.append(`<p id="${song.id}-len">${parsetime(song.length)}</p>`); // Add the song length
+            newSong.append(`<p id="${song.id}-album">${song.album}</p>`); // Add the song album
             songlist.append(newSong); // Add the song to the list
         }
         else {
             // Pretty much all we do here is check each value and see if it matches the one provided by the database
             let currentname = $("#" + song.id + "-name").text();
-            if (currentname != song.Title) {
-                $("#" + song.id + "-name").text(song.Title);
+            if (currentname != song.title) {
+                $("#" + song.id + "-name").text(song.title);
             }
             let currentartist = $("#" + song.id + "-artist").text();
-            if (currentartist != song.Artist) {
-                $("#" + song.id + "-artist").text(song.Artist);
+            if (currentartist != song.artist) {
+                $("#" + song.id + "-artist").text(song.artist);
             }
             let currentalbum = $("#" + song.id + "-album").text();
-            if (currentalbum != song.Album) {
-                $("#" + song.id + "-album").text(song.Album);
+            if (currentalbum != song.album) {
+                $("#" + song.id + "-album").text(song.album);
             }
             let currentlength = $("#" + song.id + "-len").text();
-            if (currentlength != parsetime(song.Length)) {
-                $("#" + song.id + "-len").text(parsetime(song.Length));
+            if (currentlength != parsetime(song.length)) {
+                $("#" + song.id + "-len").text(parsetime(song.length));
             }
         }
     }

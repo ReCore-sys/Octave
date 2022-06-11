@@ -33,14 +33,14 @@ $(".search-bar").on("keypress", async function (e) {
                     textarea.addClass("text-area");
                     let newimg = $("<img>");
                     newimg.addClass("search-result-art");
-                    newimg.attr("src", results[i].Image);
+                    newimg.attr("src", results[i].image);
                     let newtitle = $("<p>");
                     newtitle.addClass("search-result-title");
-                    newtitle.text(results[i].Title).wrapInner("<strong />");
+                    newtitle.text(results[i].title).wrapInner("<strong />");
                     let newartist = $("<p>");
                     newartist.addClass("search-result-artist");
-                    newartist.text(results[i].Artist);
-                    if (results[i].Image != "") {
+                    newartist.text(results[i].artist);
+                    if (results[i].image != "") {
                         newline.append(newimg);
                     }
                     textarea.append(newtitle);
@@ -88,9 +88,9 @@ async function ClickObesity(e) {
     newmodal.addClass("modal");
     newmodal.hide();
     newmodal.addClass("modal");
-    let header = $(`<h1>`).text(song.Title).addClass("modal-title");
+    let header = $(`<h1>`).text(song.title).addClass("modal-title");
     newmodal.append(header);
-    let artistheader = $(`<h2>`).text(song.Artist).addClass("modal-artist");
+    let artistheader = $(`<h2>`).text(song.artist).addClass("modal-artist");
     newmodal.append(artistheader);
     let downloadbutton = $(`<button>`).addClass("modal-download");
     if (!(await SongDownloaded(id))) {

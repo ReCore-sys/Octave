@@ -29,6 +29,7 @@ func GenerateID(path string) (string, error) {
 	}
 	hash := sha256.New()
 	hash.Write(file)
+
 	return string(hash.Sum(nil)), nil
 
 }
@@ -41,6 +42,7 @@ func CreateString(length int) string {
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
+
 	return string(b)
 
 }
@@ -54,6 +56,7 @@ func OpenDatabase() DB {
 	if err != nil {
 		log.Println(err)
 	}
+
 	return DB{db: db}
 }
 
@@ -67,11 +70,11 @@ type Playlist struct {
 
 type Song struct {
 	ID     string `json:"id"`     // Unique ID of the song
-	Title  string `json:"Title"`  // Display name of the song
-	Artist string `json:"Artist"` // Artist of the song
-	Album  string `json:"Album"`  // What album the song is from
-	Length int    `json:"Length"` // Length of the song in seconds
-	Image  string `json:"Image"`  // Path to the image for the song
+	Title  string `json:"title"`  // Display name of the song
+	Artist string `json:"artist"` // Artist of the song
+	Album  string `json:"album"`  // What album the song is from
+	Length int    `json:"length"` // Length of the song in seconds
+	Image  string `json:"image"`  // Path to the image for the song
 }
 
 func (db DB) LookupSong(id string) Song {
@@ -86,6 +89,7 @@ func (db DB) LookupSong(id string) Song {
 		formatted := fmt.Sprint(err)
 		Log.Error(formatted)
 	}
+
 	return Song{
 		Title:  title,
 		Artist: artist,
@@ -119,11 +123,14 @@ func (db DB) GetAllSongs() []Song {
 			Image:  image,
 		})
 	}
+
 	return songs
 }
 
 func (db DB) AddSong(song Song) error {
-	_, err := db.db.Exec("INSERT INTO songs VALUES (?, ?, ?, ?, ?,  ?)", song.Title, song.Album, song.Artist, song.Length, song.Image, song.ID)
+	_, err := db.db.Exec("INSERT INTO songs VALUES (?, ?, ?, ?, ?,  ?)",
+		song.Title, song.Album, song.Artist, song.Length, song.Image, song.ID)
+
 	return err
 }
 
@@ -134,6 +141,7 @@ func (db DB) DoesSongExist(id string) bool {
 	if err != nil {
 		log.Println(err)
 	}
+
 	return exists
 }
 
@@ -147,6 +155,7 @@ func (db DB) CreatePlaylist(name string) (bool, Playlist) {
 	tx, err := db.db.Begin()
 	if err != nil {
 		Log.Error(err.Error())
+
 		return false, Playlist{}
 	}
 	for {
@@ -156,26 +165,42 @@ func (db DB) CreatePlaylist(name string) (bool, Playlist) {
 		err := row.Scan(&exists)
 		if err != nil {
 			Log.Error(err.Error())
+
 			return false, Playlist{}
 		}
 		if !exists {
+
 			break
 		}
 
 	}
 	_, err = tx.Exec("INSERT INTO playlists VALUES (?, ?, \"#0\", 0)", id, name)
 	if err != nil {
-		tx.Rollback()
 		Log.Error(err.Error())
+		err = tx.Rollback()
+		if err != nil {
+			Log.Error(err.Error())
+		}
+
 		return false, Playlist{}
 	}
 	_, err = tx.Exec("CREATE TABLE playlist_" + id + " (song_id TEXT, order_ int, art TEXT)")
 	if err != nil {
-		tx.Rollback()
 		Log.Error(err.Error())
+		err = tx.Rollback()
+		if err != nil {
+			Log.Error(err.Error())
+		}
+
 		return false, Playlist{}
 	}
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		Log.Error(err.Error())
+
+		return false, Playlist{}
+	}
+
 	return db.GetPlaylist(id)
 }
 
@@ -191,6 +216,7 @@ func (db DB) GetPlaylist(id string) (bool, Playlist) {
 	rows, err := db.db.Query("SELECT name,color FROM playlists WHERE ID = ?", id)
 	if err != nil {
 		Log.Error(err.Error())
+
 		return false, Playlist{}
 	}
 	var name string
@@ -199,12 +225,14 @@ func (db DB) GetPlaylist(id string) (bool, Playlist) {
 		err := rows.Scan(&name, &color)
 		if err != nil {
 			Log.Error(err.Error())
+
 			return false, Playlist{}
 		}
 	}
 	rows, err = db.db.Query("SELECT song_id, order_, art FROM playlist_" + id)
 	if err != nil {
 		Log.Error(err.Error())
+
 		return false, Playlist{}
 	}
 	var songs []Song
@@ -215,11 +243,13 @@ func (db DB) GetPlaylist(id string) (bool, Playlist) {
 		err := rows.Scan(&song, &order, &art)
 		if err != nil {
 			Log.Error(err.Error())
+
 			return false, Playlist{}
 		}
 		truesong := db.LookupSong(song)
 		songs = append(songs, truesong)
 	}
+
 	return true, Playlist{
 		ID:    id,
 		Name:  name,
@@ -234,6 +264,7 @@ func (db DB) GetAllPlaylists() ([]Playlist, error) {
 	rows, err := db.db.Query("SELECT id FROM playlists")
 	if err != nil {
 		Log.Error(err.Error())
+
 		return nil, err
 	}
 	var playlists []Playlist
@@ -242,19 +273,42 @@ func (db DB) GetAllPlaylists() ([]Playlist, error) {
 		err := rows.Scan(&id)
 		if err != nil {
 			Log.Error(err.Error())
+
 			return nil, err
 		}
 		exists, pl := db.GetPlaylist(id)
 		if !exists {
+
 			return nil, errors.New("Playlist not found")
 		}
 		playlists = append(playlists, pl)
 	}
+
 	return playlists, nil
 }
 
 // Deleting a playlist from the database.
 func (db DB) DeletePlaylist(id string) {
-	db.db.Exec("DROP TABLE playlist_" + id)
-	db.db.Exec("DELETE FROM playlists WHERE ID = ?", id)
+	tx, err := db.db.Begin()
+	if err != nil {
+		Log.Error(err.Error())
+
+		return
+	}
+	_, err = tx.Exec("DROP TABLE playlist_" + id)
+	if err != nil {
+		Log.Error(err.Error())
+		err = tx.Rollback()
+		if err != nil {
+			Log.Error(err.Error())
+		}
+	}
+	_, err = tx.Exec("DELETE FROM playlists WHERE ID = ?", id)
+	if err != nil {
+		Log.Error(err.Error())
+		err = tx.Rollback()
+		if err != nil {
+			Log.Error(err.Error())
+		}
+	}
 }

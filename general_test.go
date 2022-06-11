@@ -1,10 +1,11 @@
+//nolint
 package main
 
 import (
 	db "Octave/golibs/database"
 	"Octave/golibs/download"
 	logging "Octave/golibs/log"
-	"Octave/golibs/search_engine"
+	searchengine "Octave/golibs/search_engine"
 	"Octave/golibs/settings"
 	global_state "Octave/golibs/state"
 	_ "embed"
@@ -64,7 +65,7 @@ func BenchmarkSearch(b *testing.B) {
 
 func BenchmarkSearchDisk(b *testing.B) {
 	q := "Stains of time"
-	res, err := search_engine.Search(q)
+	res, err := searchengine.Search(q)
 	if err != nil {
 		b.Error(err)
 	}
@@ -72,7 +73,10 @@ func BenchmarkSearchDisk(b *testing.B) {
 }
 
 func BenchmarkIndex(b *testing.B) {
-	search_engine.FirstIndex()
+	err := searchengine.FirstIndex()
+	if err != nil {
+		b.Error(err)
+	}
 
 }
 

@@ -42,11 +42,15 @@ func (a *App) Parse(path string) string {
 	if err != nil {
 		Log.Error(err.Error())
 	}
-	json.Unmarshal(v, &emptycontext)
+	err = json.Unmarshal(v, &emptycontext)
+	if err != nil {
+		Log.Error(err.Error())
+	}
 	out, err := t.Execute(emptycontext)
 	if err != nil {
 		Log.Error(err.Error())
 	}
+
 	return out
 }
 
@@ -57,6 +61,7 @@ func MapMixer(inmaps ...map[string]any) map[string]any {
 			outmap[k] = v
 		}
 	}
+
 	return outmap
 }
 
@@ -70,5 +75,6 @@ func StructToMap(str any) map[string]any {
 	if err != nil {
 		Log.Error(err.Error())
 	}
+
 	return outmap
 }

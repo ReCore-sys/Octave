@@ -3,12 +3,13 @@ package main
 import (
 	db "Octave/golibs/database"
 	logging "Octave/golibs/log"
-	"Octave/golibs/search_engine"
+	searchengine "Octave/golibs/search_engine"
 	"Octave/golibs/settings"
 	global_state "Octave/golibs/state"
 	"embed"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"os"
 	"runtime/debug"
 
@@ -25,7 +26,7 @@ import (
 //go:embed frontend/src
 var Assets embed.FS
 
-var Settings settings.SettingsStruct
+var Settings settings.SettingStruct
 var Log *golog.Logger
 
 func fatalpanic(stacktrace string) {
@@ -53,7 +54,8 @@ func main() {
 	flag.Parse()
 	// Only run the panic wrapper if we're not in debug mode, cos it messes with vscode's debugging
 	// so just use -debug as a flag to disable it, which I added to the debug profile
-	if *catchpanic {
+	fmt.Printf("Panic catch flag mode: %v\n", *catchpanic)
+	if !*catchpanic {
 		println("Running in production mode")
 		// When the app closes from either user input or just stuff breaking, run this function
 		defer func() {
@@ -69,16 +71,18 @@ func main() {
 		// If exitStatus >= 0, then we're the parent process and the panicwrap
 		// re-executed ourselves and completed. Just exit with the proper status.
 		if exitStatus >= 0 {
-			os.Exit(exitStatus)
+			os.Exit(exitStatus) //nolint
 		}
 	}
-	go search_engine.StartEngine()
-	go search_engine.FirstIndex()
+	go searchengine.StartEngine() //nolint
+	go searchengine.FirstIndex()  //nolint
 	Settings = settings.Settings()
 	// Create an instance of the app structure
 	Log.Info("Creating App")
 	app := NewApp()
 	var state global_state.Statemap
+	state.IsDebug = *catchpanic
+	global_state.SaveState(state)
 	// Open Settings.stateFile and read the json into a statemap
 	Log.Info("Loading StateFile")
 	statefile, err := os.ReadFile(Settings.StateFile)

@@ -25,16 +25,16 @@ export async function FillItems() {
         let row = $(`<tr song-id="${song.id}">`);
         let songtitle = $(
             `<td song-id="${song.id}" class="song-title text-truncate">`
-        ).text(song.Title);
+        ).text(song.title);
         let artist = $(
             `<td song-id="${song.id}" class="song-artist text-truncate">`
-        ).text(song.Artist);
+        ).text(song.artist);
         let length = $(
             `<td song-id="${song.id}" class="song-length text-truncate">`
-        ).text(parsetime(song.Length));
+        ).text(parsetime(song.length));
         let album = $(
             `<td song-id="${song.id}" class="song-album text-truncate">`
-        ).text(song.Album);
+        ).text(song.album);
         row.append(songtitle);
         row.append(artist);
         row.append(length);

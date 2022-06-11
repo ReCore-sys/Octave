@@ -19,6 +19,7 @@ var created = false
 func CreateLogger() {
 	if created {
 		Log.Warning("Logger already created")
+
 		return
 	}
 	var err error

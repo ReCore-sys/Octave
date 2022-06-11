@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 )
 
 // App struct
@@ -50,7 +49,7 @@ func (a *App) shutdown(ctx context.Context) {
 	if err != nil {
 		Log.Errorf("Error marshalling state: %s", err)
 	}
-	err = ioutil.WriteFile(loc, json, 0644)
+	err = ioutil.WriteFile(loc, json, 0600)
 	if err != nil {
 		Log.Errorf("Error writing state: %s", err)
 	}
@@ -62,12 +61,6 @@ func (a *App) shutdown(ctx context.Context) {
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
-
-/* Overwriting the index.html file with the contents of the trueindex.html file. */
-//func (a *App) Overwrite() string {
-//	text := a.Parse("trueindex.html")
-//	return text
-//}
 
 /* It's returning the global state. */
 func (a *App) GetState() global_state.Statemap {
@@ -83,19 +76,14 @@ func (a *App) UpdateSong(song db.Song) {
 
 func (a *App) FindSong(id string) db.Song {
 	database := db.OpenDatabase()
+
 	return database.LookupSong(id)
 }
 
 func (a *App) GetAllSongs() []db.Song {
 	database := db.OpenDatabase()
-	return database.GetAllSongs()
-}
 
-func (a *App) Sleep() string {
-	Log.Debug("Sleeping")
-	time.Sleep(time.Second * 5)
-	Log.Debug("Waking up")
-	return "Done"
+	return database.GetAllSongs()
 }
 
 /* It's a function that takes a string and a logtype and logs it to the console. */
@@ -122,9 +110,11 @@ func (a *App) Save(id string) bool {
 	song.Image = fmt.Sprintf("%s.jpg", id)
 	if (song == db.Song{}) {
 		Log.ErrorF("Song not found in cache: %v", id)
+
 		return false
 	}
 	err := database.AddSong(song)
+
 	return err == nil
 }
 
@@ -134,19 +124,22 @@ func (a *App) SongDownloaded(id string) bool {
 	if ex {
 		Log.Infof("Song %s already exists", id)
 	}
+
 	return ex
 }
 
-func (a *App) Settings() settings.SettingsStruct {
-	if (Settings == settings.SettingsStruct{}) {
+func (a *App) Settings() settings.SettingStruct {
+	if (Settings == settings.SettingStruct{}) {
 		Settings = settings.Settings()
 	}
+
 	return Settings
 }
 
 func (a *App) CreatePlaylist(name string) bool {
 	database := db.OpenDatabase()
 	err, _ := database.CreatePlaylist(name)
+
 	return err
 }
 
@@ -155,21 +148,29 @@ func SaveImage(song db.Song) {
 	resp, err := http.Get(song.Image)
 	if err != nil {
 		Log.Errorf("Error getting image: %s", err)
+
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		Log.Errorf("Error reading image: %s", err)
+
 		return
 	}
 	loc := fmt.Sprintf("%s/song_img/%s.jpg", Settings.AssetDir, song.ID)
 	f, err := os.OpenFile(loc, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		Log.Errorf("Error opening file: %s", err)
+
 		return
 	}
 	defer f.Close()
-	f.Write(body)
+	_, err = f.Write(body)
+	if err != nil {
+		Log.Errorf("Error writing file: %s", err)
+
+		return
+	}
 
 }

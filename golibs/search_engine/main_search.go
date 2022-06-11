@@ -1,4 +1,4 @@
-package search_engine
+package searchengine
 
 import (
 	db "Octave/golibs/database"
@@ -18,6 +18,7 @@ var (
 	})
 	ind = client.Index("songs")
 )
+var results []db.Song
 
 func StartEngine() error {
 	isrunning := false
@@ -28,17 +29,19 @@ func StartEngine() error {
 	for _, process := range processList {
 		if process.Executable() == "OctaveSearchEngine.exe" {
 			isrunning = true
+
 			break
 		}
 	}
 	if !isrunning {
 		sett := settings.Settings()
-		go exec.Command("./OctaveSearchEngine.exe", "--db-path", "./meilli",
-			"--max-indexing-memory", fmt.Sprint(sett.MeilliRam),
+		go exec.Command("./OctaveSearchEngine.exe", "--db-path", "./meilli", //nolint:gosec
+			"--max-indexing-memory", fmt.Sprint(sett.MeilliRAM),
 			"--max-indexing-threads", fmt.Sprint(sett.MeilliThreads),
-			"--http-addr", fmt.Sprintf("127.0.0.1:%v", sett.MeilliPort)).Start()
+			"--http-addr", fmt.Sprintf("127.0.0.1:%v", sett.MeilliPort)).Start() //nolint
 
 	}
+
 	return nil
 
 }
@@ -46,6 +49,7 @@ func StartEngine() error {
 func FirstIndex() error {
 	js, err := json.Marshal(db.OpenDatabase().GetAllSongs())
 	if err != nil {
+
 		return err
 	}
 	client := meilisearch.NewClient(meilisearch.ClientConfig{
@@ -53,19 +57,21 @@ func FirstIndex() error {
 	})
 	_, err = client.Index("songs").AddDocuments(js)
 	if err != nil {
+
 		return err
 	}
+
 	return nil
 }
 
 func Search(query string) ([]db.Song, error) {
-	var results []db.Song
-
-	var search_request meilisearch.SearchRequest
+	results = []db.Song{}
+	var searchRequest meilisearch.SearchRequest
 	start := time.Now()
-	res, err := ind.Search(query, &search_request)
+	res, err := ind.Search(query, &searchRequest)
 	fmt.Printf("Search took %s\n", time.Since(start))
 	if err != nil {
+
 		return []db.Song{}, err
 	}
 	for _, i := range res.Hits {
@@ -84,12 +90,14 @@ func Search(query string) ([]db.Song, error) {
 			result.Image = ""
 		}
 		if err != nil {
+
 			return []db.Song{}, err
 		}
 
 		results = append(results, result)
 
 	}
+
 	return results, nil
 
 }

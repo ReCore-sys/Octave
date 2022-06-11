@@ -11,6 +11,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var missedbeats int
+var beatrecived = false
+var beatcount int
+
 // Websocket handler
 func handleRequests() {
 	settings := settings.Settings()
@@ -29,11 +33,9 @@ func handleRequests() {
 }
 
 var upgrader = websocket.Upgrader{
-	HandshakeTimeout:  0,
-	ReadBufferSize:    1024,
-	WriteBufferSize:   1024,
-	CheckOrigin:       func(r *http.Request) bool { return true }, // TODO: fix this later so people don't get XSS'd into oblivion
-	EnableCompression: false,
+	HandshakeTimeout: 0,
+	ReadBufferSize:   1024,
+	WriteBufferSize:  1024, EnableCompression: false,
 }
 
 var activeconn *websocket.Conn
@@ -49,72 +51,25 @@ func wshandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func heartbeat(conn *websocket.Conn) {
-	var missedbeats int
-	beatrecived := false
-	var beatcount int
 	for {
 		if conn != activeconn {
 			break
 		}
 		if TimeCheck(1000) {
-			out := make(map[string]string)
-			out["type"] = "update"
-			out["time"] = strconv.Itoa(int(time.Now().Unix()))
-			jsonform, err := json.Marshal(out)
-			if err != nil {
-				Log.Error(err.Error())
-			}
-			conn.WriteMessage(websocket.TextMessage, jsonform)
+			WSUpdate(conn)
 		}
 		if TimeCheck(500) {
-			out := make(map[string]string)
-			out["type"] = "heartbeat"
-			out["time"] = strconv.Itoa(int(time.Now().Unix()))
-			out["id"] = strconv.Itoa(beatcount)
-			beatcount++
-			jsonform, err := json.Marshal(out)
-			if err != nil {
-				Log.Error(err.Error())
-			}
-			conn.WriteMessage(websocket.TextMessage, jsonform)
-			//time.Sleep(500 * time.Millisecond)
-
-			msgcont := make(map[string]string)
-			var msg []uint8
-			for {
-				_, msg, err = conn.ReadMessage()
-
-				if err != nil {
-					Log.Error(err.Error())
-					break
-				}
-				if len(msg) > 0 {
-					break
-				}
-			}
-			err = json.Unmarshal(msg, &msgcont)
-			if err != nil {
-				Log.Error(err.Error())
-			}
-			if msgcont["type"] == "heartbeat" {
-				beatrecived = true
-				missedbeats = 0
-			}
-			if !beatrecived {
-				missedbeats++
-			}
-			if missedbeats > 1 {
-				Log.WarningF("Lost connection to client, missed %d beats", missedbeats)
+			dobreak := WSHeartbeat(conn)
+			if dobreak {
 				break
 			}
-			beatrecived = false
 		}
 		time.Sleep(time.Millisecond)
 
 	}
 	Log.Info("A connection was made from the same IP and port more recently than this one, closing connection")
-	err := conn.Close()
-	if err != nil {
+
+	if err := conn.Close(); err != nil {
 		Log.Error(err.Error())
 	}
 }
@@ -122,5 +77,72 @@ func heartbeat(conn *websocket.Conn) {
 // Will return true every x milliseconds
 func TimeCheck(every int64) bool {
 	current := time.Now().UnixMilli()
+
 	return current%every == 0
+}
+
+func WSUpdate(conn *websocket.Conn) {
+
+	out := make(map[string]string)
+	out["type"] = "update"
+	out["time"] = strconv.Itoa(int(time.Now().Unix()))
+	jsonform, err := json.Marshal(out)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	err = conn.WriteMessage(websocket.TextMessage, jsonform)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+}
+
+func WSHeartbeat(conn *websocket.Conn) bool {
+	out := make(map[string]string)
+	out["type"] = "heartbeat"
+	out["time"] = strconv.Itoa(int(time.Now().Unix()))
+	out["id"] = strconv.Itoa(beatcount)
+	beatcount++
+	jsonform, err := json.Marshal(out)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	err = conn.WriteMessage(websocket.TextMessage, jsonform)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+
+	msgcont := make(map[string]string)
+	var msg []uint8
+	for {
+		_, msg, err = conn.ReadMessage()
+
+		if err != nil {
+			Log.Error(err.Error())
+
+			break
+		}
+		if len(msg) > 0 {
+
+			break
+		}
+	}
+	err = json.Unmarshal(msg, &msgcont)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	if msgcont["type"] == "heartbeat" {
+		beatrecived = true
+		missedbeats = 0
+	}
+	if !beatrecived {
+		missedbeats++
+	}
+	if missedbeats > 1 {
+		Log.WarningF("Lost connection to client, missed %d beats", missedbeats)
+
+		return true
+	}
+	beatrecived = false
+
+	return false
 }
